@@ -1,4 +1,3 @@
-import pytest
 from src.math_utils import add, multiply
 
 def test_addition():
