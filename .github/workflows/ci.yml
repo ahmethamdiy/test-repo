@@ -1,4 +1,4 @@
-name: Python CI with Coverage and Linting
+name: Python CI with Coverage, Linting and Formatting
 
 on:
   push:
@@ -24,7 +24,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install pytest-cov flake8
+          pip install pytest-cov flake8 black
+
+      - name: Run Black (check formatting)
+        run: |
+          black --check --diff src tests
 
       - name: Run linting with flake8
         run: |
