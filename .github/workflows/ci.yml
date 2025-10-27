@@ -1,4 +1,4 @@
-name: Python CI with Coverage Badge
+name: Python CI with Coverage and Linting
 
 on:
   push:
@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
-
-permissions:
-  contents: write   # badge için gerekli
 
 jobs:
   build:
@@ -27,19 +24,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install pytest-cov
+          pip install pytest-cov flake8
 
-      - name: Run tests with coverage (HTML + terminal + JSON)
+      - name: Run linting with flake8
         run: |
-          PYTHONPATH=src pytest --cov=src --cov-report=term-missing --cov-report=html --cov-report=json -v
+          flake8 src tests --max-line-length=100 --statistics
+
+      - name: Run tests with coverage (HTML + terminal)
+        run: |
+          PYTHONPATH=src pytest --cov=src --cov-report=term-missing --cov-report=html -v
 
       - name: Upload coverage HTML report
         uses: actions/upload-artifact@v3
         with:
           name: coverage-html-report
           path: htmlcov
-
-      - name: Generate coverage badge
-        uses: wouterds/github-coverage-badge-action@v1.0.1
-        with:
-          coverage-summary-path: coverage.json
